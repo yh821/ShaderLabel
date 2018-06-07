@@ -1,4 +1,4 @@
-Shader "ApcShader/GrabPass"
+Shader "Custom/GrabPass"
 {
     SubShader
     {
