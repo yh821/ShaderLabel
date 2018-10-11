@@ -1,12 +1,12 @@
 ﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
-Shader "FX/Standard/Twist"
+Shader "Custom/UI/UIRotateUV"
 {
 	Properties
 	{
 		[PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
-		_Color ("Tint", Color) = (1,1,1,1)
-
+		_Color("Tint", Color) = (1,1,1,1)
+		
 		_StencilComp ("Stencil Comparison", Float) = 8
 		_Stencil ("Stencil ID", Float) = 0
 		_StencilOp ("Stencil Operation", Float) = 0
@@ -15,31 +15,26 @@ Shader "FX/Standard/Twist"
 
 		_ColorMask ("Color Mask", Float) = 15
 
+		_Speed ("Speed", Float) = -120
 		[Toggle(UNITY_UI_ALPHACLIP)] _UseUIAlphaClip ("Use Alpha Clip", Float) = 0
-
-		_Distortion ("Distortion", Range(0,1)) = 0
-		_PosX ("PosX", Range(0,1)) = 0
-		_PosY ("PosY", Range(0,1)) = 0
-
-		_UvRect ("UvRect", Vector) = (0, 0, 1, 1)
 	}
 
 	SubShader
 	{
 		Tags
-		{
-			"Queue"="Transparent"
-			"IgnoreProjector"="True"
-			"RenderType"="Transparent"
+		{ 
+			"Queue"="Transparent" 
+			"IgnoreProjector"="True" 
+			"RenderType"="Transparent" 
 			"PreviewType"="Plane"
 			"CanUseSpriteAtlas"="True"
 		}
-
+		
 		Stencil
 		{
 			Ref [_Stencil]
 			Comp [_StencilComp]
-			Pass [_StencilOp]
+			Pass [_StencilOp] 
 			ReadMask [_StencilReadMask]
 			WriteMask [_StencilWriteMask]
 		}
@@ -61,13 +56,12 @@ Shader "FX/Standard/Twist"
 			#include "UnityUI.cginc"
 
 			#pragma multi_compile __ UNITY_UI_ALPHACLIP
-
+			
 			struct appdata_t
 			{
 				float4 vertex   : POSITION;
-				float4 color    : COLOR;
-				float2 texcoord : TEXCOORD0;
-				float2 texcoord1 : TEXCOORD1;
+				fixed4 color    : COLOR;
+				half2 texcoord : TEXCOORD0;
 			};
 
 			struct v2f
@@ -76,70 +70,48 @@ Shader "FX/Standard/Twist"
 				fixed4 color    : COLOR;
 				half2 texcoord  : TEXCOORD0;
 				float4 worldPosition : TEXCOORD1;
-				float2 texcoord1 : TEXCOORD2;
 			};
-
-			fixed4 _Color;
-			fixed4 _TextureSampleAdd;
+			
+			sampler2D _MainTex;
 			float4 _ClipRect;
+			float _Speed;
+			fixed4 _Color;
 
 			v2f vert(appdata_t IN)
 			{
 				v2f OUT;
 				OUT.worldPosition = IN.vertex;
 				OUT.vertex = UnityObjectToClipPos(OUT.worldPosition);
-				OUT.vertex = UnityObjectToClipPos(IN.vertex);
 
 				OUT.texcoord = IN.texcoord;
-
+				
 				#ifdef UNITY_HALF_TEXEL_OFFSET
 				OUT.vertex.xy += (_ScreenParams.zw-1.0)*float2(-1,1);
 				#endif
-
+				
 				OUT.color = IN.color * _Color;
-				OUT.texcoord1 = IN.texcoord1;
 				return OUT;
 			}
 
-			float _Distortion;
-			float _PosX;
-			float _PosY;
-			float4 _UvRect;
-
-			float4 twist(sampler2D tex, float2 uv, float time)
+			fixed2 rotate_texture(fixed2 uv, fixed2 rotPara)
 			{
-				float radius = 0.5;
-				float2 center = float2(_PosX, _PosY);
-				float2 tc = uv - center;
-				float dist = length(tc);
-				if (dist < radius)
-				{
-					float percent = (radius - dist) / radius;
-					float theta = percent * percent * (2.0 * sin(time)) * 8.0;
-					float s = sin(theta);
-					float c = cos(theta);
-					tc = float2(dot(tc, float2(c, -s)), dot(tc, float2(s, c)));
-				}
-				tc += center;
-				tc.x = _UvRect.x + (_UvRect.z - _UvRect.x) * tc.x;
-				tc.y = _UvRect.y + (_UvRect.w - _UvRect.y) * tc.y;
-				float4 color = tex2D(tex, tc);
-				return color;
+				uv.xy -= 0.5;
+				fixed newX = uv.x * rotPara.y + uv.y * rotPara.x + 0.5;
+				uv.y = uv.y * rotPara.y - uv.x * rotPara.x + 0.5; 
+				uv.x = newX;
+				return uv;
 			}
-
-			sampler2D _MainTex;
 
 			fixed4 frag(v2f IN) : SV_Target
 			{
-				half4 color = twist(_MainTex, IN.texcoord1, _Distortion) * IN.color;
-
-				color.a *= UnityGet2DClipping(IN.worldPosition.xy, _ClipRect);
-
+				float angle = frac(_Time.x)*3.15f*_Speed;
+				float2 rota = float2(sin(angle), cos(angle));
+				half4 colMain = tex2D(_MainTex, rotate_texture(IN.texcoord, rota)) * IN.color;
+				colMain.a *= UnityGet2DClipping(IN.worldPosition.xy, _ClipRect);
 				#ifdef UNITY_UI_ALPHACLIP
-				clip (color.a - 0.001);
+				clip (colMain.a - 0.001);
 				#endif
-
-				return color;
+				return colMain;
 			}
 		ENDCG
 		}

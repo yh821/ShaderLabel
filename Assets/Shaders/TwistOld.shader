@@ -1,4 +1,6 @@
-﻿Shader "FX/Standard/TwistOld"
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+Shader "FX/Standard/TwistOld"
 {
 	Properties
 	{
@@ -81,8 +83,8 @@
 			{
 				v2f OUT;
 				OUT.worldPosition = IN.vertex;
-				OUT.vertex = mul(UNITY_MATRIX_MVP, OUT.worldPosition);
-				OUT.vertex = mul(UNITY_MATRIX_MVP, IN.vertex);
+				OUT.vertex = UnityObjectToClipPos(OUT.worldPosition);
+				OUT.vertex = UnityObjectToClipPos(IN.vertex);
 
 				OUT.texcoord = IN.texcoord;
 

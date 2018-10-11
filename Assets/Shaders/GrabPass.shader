@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 Shader "Custom/GrabPass"
 {
     SubShader
@@ -35,7 +37,7 @@ Shader "Custom/GrabPass"
 
             v2f vert(appdata_base v){
                 v2f o;
-                o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
+                o.pos = UnityObjectToClipPos(v.vertex);
                 //计算抓屏的位置，其中主要是将坐标从(-1,1)转化到（0,1）空间并处理DX和GL纹理反向的问题
                 o.grabPos = ComputeGrabScreenPos(o.pos);
                 return o;

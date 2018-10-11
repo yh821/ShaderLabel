@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 Shader "Example/ShadowColor" 
 {
     Properties 
@@ -34,7 +36,7 @@ Shader "Example/ShadowColor"
             VertexToFragment vertexMain (appdata_full v) 
             {
                 VertexToFragment result = (VertexToFragment)0;
-                result.pos = mul(UNITY_MATRIX_MVP, v.vertex);
+                result.pos = UnityObjectToClipPos(v.vertex);
                 result.uv.xy =  v.texcoord.xy;
                 TRANSFER_SHADOW(result)
                 return result;
