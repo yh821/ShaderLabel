@@ -9,6 +9,9 @@
 	{
 		Tags { "RenderType"="Opaque" }
 		LOD 100
+		//ZWrite off
+		//ZTest Always
+		blend srcalpha oneminussrcalpha
 
 		Pass
 		{

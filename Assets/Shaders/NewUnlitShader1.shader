@@ -22,7 +22,7 @@
 			SetTexture[_GrabTex]{
 				ConstantColor (0,1,0,1)
 				Combine constant * texture
-				//Combine one - texture
+				Combine one - texture
 			}
 			SetTexture[_GrabTex]{
 				Combine one - previous

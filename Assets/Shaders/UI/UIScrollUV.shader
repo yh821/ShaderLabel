@@ -17,7 +17,9 @@ Shader "Custom/UI/UIScrollUV"
 
 		_Speed("Speed", Range(0,5)) = 0.5
 		_SpeedDirX("SpeedDirX", int) = -1
-		_SpeedDirY("SpeedDirX", int) = 0
+		_SpeedDirY("SpeedDirY", int) = 0
+
+		_UvRect ("UvRect", Vector) = (0, 0, 1, 1)
 	}
 
 	SubShader
@@ -73,6 +75,7 @@ Shader "Custom/UI/UIScrollUV"
 			float _Speed;
 			int _SpeedDirX;
 			int _SpeedDirY;
+			float4 _UvRect;
 
 			v2f vert(appdata_t IN)
 			{
@@ -88,9 +91,12 @@ Shader "Custom/UI/UIScrollUV"
 
 			fixed4 frag(v2f IN) : SV_Target
 			{
-				half time = frac(_Time.y * _Speed);
-				half2 uv = IN.texcoord + half2(time * _SpeedDirX, time * _SpeedDirY);
-				uv = frac(uv);
+				float time = frac(_Time.y * _Speed);
+				float2 uv = IN.texcoord + float2(time * _SpeedDirX, time * _SpeedDirY);
+				float width = _UvRect.z - _UvRect.x;
+				float height = _UvRect.w - _UvRect.y;
+				uv.x = fmod(uv.x+width*4,width)+_UvRect.x;
+				uv.y = fmod(uv.y+height*4,height)+_UvRect.y;
 				half4 color = tex2D(_MainTex, uv) * IN.color;
 				clip(color.a - 0.01);
 				return color;
