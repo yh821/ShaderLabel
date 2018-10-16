@@ -34,3 +34,5 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+Assets/.DS_Store
+Assets/Altas/.DS_Store
