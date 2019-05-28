@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: 1725476ecfd972c48905fe8a4d0308e3
+labels:
+- Particle Alpha Blend
+timeCreated: 1469081235
+licenseType: Pro
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: shader.ab
+  assetBundleVariant: 

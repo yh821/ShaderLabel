@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: 200_pubu_001
+  m_Shader: {fileID: 4800000, guid: 45d280aa773635b4da2a67d65efc084a, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 5
+  m_CustomRenderQueue: 2650
+  stringTagMap: {}
+  m_SavedProperties:
+    serializedVersion: 2
+    m_TexEnvs:
+    - first:
+        name: _MainTex
+      second:
+        m_Texture: {fileID: 2800000, guid: b6c39bd2866eb9e42a94a8c4be795c1a, type: 3}
+        m_Scale: {x: 1.5, y: 3}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _NoiseTex
+      second:
+        m_Texture: {fileID: 2800000, guid: 81c4a91dfb3b2824cbd706870fb94720, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - first:
+        name: _ForceX
+      second: 0.3
+    - first:
+        name: _ForceY
+      second: 0.4
+    - first:
+        name: _HeatTime
+      second: 0.1
+    m_Colors:
+    - first:
+        name: _TintColor
+      second: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 0.5019608}

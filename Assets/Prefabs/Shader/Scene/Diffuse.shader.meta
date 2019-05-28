@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: 0120bd9826dcf3c4b90192185651b808
+labels:
+- Diffuse
+timeCreated: 1469587239
+licenseType: Pro
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: shader.ab
+  assetBundleVariant: 
