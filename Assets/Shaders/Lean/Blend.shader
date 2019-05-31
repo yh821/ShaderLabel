@@ -1,9 +1,10 @@
-﻿Shader "Unlit/NewUnlitShaderw2"
+﻿Shader "Unlit/AlphaTest"
 {
 	Properties
 	{
 		_MainTex ("Texture", 2D) = "white" {}
 		_Color ("Color", color) = (1,1,1,1)
+		_Cutoff("Cutoff",float) = 0.5
 	}
 	SubShader
 	{
@@ -11,7 +12,7 @@
 		LOD 100
 		//ZWrite off
 		//ZTest Always
-		blend srcalpha oneminussrcalpha
+		Blend SrcAlpha One //纹理黑色部分相加到目标达到透明效果
 
 		Pass
 		{

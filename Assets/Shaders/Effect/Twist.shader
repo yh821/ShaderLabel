@@ -81,7 +81,7 @@ Shader "FX/Standard/Twist"
 
 			fixed4 _Color;
 			fixed4 _TextureSampleAdd;
-			float4 _ClipRect;
+			float4 _ClipRect;//该变量用来保存2D裁剪框的左下角和右上角2个点，共4个float值
 
 			v2f vert(appdata_t IN)
 			{
