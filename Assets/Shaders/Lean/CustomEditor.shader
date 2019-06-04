@@ -9,7 +9,7 @@ Shader "Lean/CustomEditor"
 		_MainTex ("Main Tex", 2D) = "white" {}
 		_SecondTex ("Second Tex", 2D) = "white" {}
 		_BlurRadius ("BlurRadius", Range(1, 20)) = 5
-		[Space(30)]
+		[Space(20)]
 		// Toggle displays a **float** as a toggle.
 		// The property value will be 0 or 1, depending on the toggle state.
 		// When it is on, a shader keyword with the uppercase property name +"_ON" will be set,
@@ -18,9 +18,9 @@ Shader "Lean/CustomEditor"
 		// Will set "ENABLE_FANCY" shader keyword when set
 		[Toggle(ENABLE_FANCY)] _Fancy ("Fancy?", Float) = 0
 		[Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend ("Src Blend Mode", Float) = 1
-		[Enum(UnityEngine.Rendering.BlendMode)] _DstBlend ("Dst Blend Mode", Float) = 1
-		[Enum(Off, 0, On, 1)] _ZWrite ("ZWrite", Float) = 0
-		[Enum(UnityEngine.Rendering.CompareFunction)] _ZTest ("ZTest", Float) = 0
+		[Enum(UnityEngine.Rendering.BlendMode)] _DstBlend ("Dst Blend Mode", Float) = 0
+		[Enum(Off, 0, On, 1)] _ZWrite ("ZWrite", Float) = 1
+		[Enum(UnityEngine.Rendering.CompareFunction)] _ZTest ("ZTest", Float) = 2
 		[Enum(UnityEngine.Rendering.CullMode)] _Cull ("Cull Mode", Float) = 1
 		// KeywordEnum displays a popup menu for a **float** property, and enables corresponding shader keyword.
 		// This is used with "#pragma multi_compile" in shaders, to enable or disable parts of shader code.

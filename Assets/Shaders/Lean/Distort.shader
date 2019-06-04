@@ -12,7 +12,8 @@ Shader "Lean/Distort"
 	}
 	SubShader
 	{
-		ZWrite Off
+		//ZWrite Off
+		//ZTest Always
 		Cull Off
 		//GrabPass
 		GrabPass

@@ -1,18 +1,23 @@
-﻿Shader "Unlit/AlphaTest"
+﻿Shader "Unlit/Blend"
 {
 	Properties
 	{
 		_MainTex ("Texture", 2D) = "white" {}
 		_Color ("Color", color) = (1,1,1,1)
-		_Cutoff("Cutoff",float) = 0.5
+		[Space(20)]
+		[Enum(Off, 0, On, 1)] _ZWrite ("ZWrite", Float) = 1
+		[Enum(UnityEngine.Rendering.CompareFunction)] _ZTest ("ZTest", Float) = 2
+		[Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend ("Src Blend Mode", Float) = 1
+		[Enum(UnityEngine.Rendering.BlendMode)] _DstBlend ("Dst Blend Mode", Float) = 0
 	}
 	SubShader
 	{
-		Tags { "RenderType"="Opaque" }
+		Tags { "Queue"="Transparent" }
 		LOD 100
-		//ZWrite off
-		//ZTest Always
-		Blend SrcAlpha One //纹理黑色部分相加到目标达到透明效果
+
+		ZWrite [_ZWrite]
+		ZTest [_ZTest]
+		Blend [_SrcBlend] [_DstBlend]
 
 		Pass
 		{

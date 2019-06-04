@@ -4,16 +4,23 @@
 	{
 		_MainTex ("Texture", 2D) = "white" {}
 		_Color ("Color", color) = (1,1,1,1)
+		[Space(20)]
+		[Enum(UnityEngine.Rendering.CompareFunction)] _AlphaTest ("AlphaTest", Float) = 0
 		_Cutoff("Cutoff",float) = 0.5
+		[Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend ("Src Blend Mode", Float) = 1
+		[Enum(UnityEngine.Rendering.BlendMode)] _DstBlend ("Dst Blend Mode", Float) = 0
+		[Enum(Off, 0, On, 1)] _ZWrite ("ZWrite", Float) = 1
+		[Enum(UnityEngine.Rendering.CompareFunction)] _ZTest ("ZTest", Float) = 2
 	}
 	SubShader
 	{
-		Tags { "RenderType"="Opaque" }
+		Tags { "Queue" = "AlphaTest" }
 		LOD 100
-		//ZWrite off
-		//ZTest Always
-		AlphaTest GEqual [_Cutoff]
-		//Blend SrcAlpha OneMinusSrcAlpha
+
+		Blend [_SrcBlend] [_DstBlend]
+		ZWrite [_ZWrite]
+		ZTest [_ZTest]
+		AlphaTest [_AlphaTest] [_Cutoff]
 
 		Pass
 		{
