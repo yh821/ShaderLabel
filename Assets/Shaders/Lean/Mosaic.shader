@@ -1,5 +1,6 @@
 ﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-//马赛克
+
+// 马赛克
 Shader "Lean/Mosaic"
 {
 	Properties {

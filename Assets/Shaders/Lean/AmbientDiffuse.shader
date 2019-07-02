@@ -1,13 +1,11 @@
-﻿Shader "Lean/Diffuse"
+﻿//环境光+漫反射
+Shader "Lean/AmbientDiffuse"
 {
     //属性声明
     Properties{
         _MainTex ("Main Tex", 2D) = "white" {}
         _Color ("Color Tint", Color) = (1, 1, 1, 1)
-        _Specular ("Specular", Color) = (1, 1, 1, 1)//高光颜色
-        _Gloss ("Gloss", Range(8.0, 256)) = 20
-        _DiffuseFactor("_DiffuseFactor", Range(0, 256)) = 1//漫反射
-        _SpecularFactor("_SpecularFactor", Range(0, 256)) = 1//
+        _DiffuseFactor("_DiffuseFactor", Range(0, 10)) = 1//漫反射
     }
     //着色器
     SubShader{
@@ -24,13 +22,10 @@
             #include "Lighting.cginc"
 
             //在CG代码中，需要定义一个与属性名称与类型都匹配的变量
-            fixed4 _Color;
             sampler2D _MainTex;
             float4 _MainTex_ST;
-            fixed4 _Specular;
-            float _Gloss;   
+            fixed4 _Color;
             float _DiffuseFactor;
-            float _SpecularFactor;
 
             //通过结构体定义顶点着色器输入
             struct a2v{
@@ -76,17 +71,13 @@
                 //世界光照的方向
                 fixed3 worldLightDir = normalize(UnityWorldSpaceLightDir(i.worldPos));              
                 //采样颜色值
-                fixed3 albedo = tex2D(_MainTex, i.uv).rgb * _Color.rgb;
+                fixed4 texColor = tex2D(_MainTex, i.uv) * _Color;
                 //环境光
-                fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz * albedo; 
-                //漫反射
-                fixed3 diffuse = _LightColor0.rgb * albedo * max(0, dot(worldNormal, worldLightDir));
-                //世界空间观察方向（视角方向=相同位置-模型位置），内置函数：UnityWorldSpaceViewDir(i.worldPos)
-                fixed3 viewDir = normalize(_WorldSpaceCameraPos.xyz - i.worldPos.xyz);
-                fixed3 halfDir = normalize(worldLightDir + viewDir);
-                fixed3 specular = _LightColor0.rgb * _Specular.rgb * pow(max(0, dot(worldNormal, halfDir)), _Gloss);
+                fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz * texColor.xyz; 
+                //漫反射 = 光源颜色*材质颜色*max(0,dot(法线,光源方向))
+                fixed3 diffuse = _LightColor0.rgb * texColor.xyz * max(0, dot(worldNormal, worldLightDir));
                 //光照模型
-                return fixed4(ambient + diffuse  * _DiffuseFactor + specular * _SpecularFactor, 1.0);
+                return fixed4(ambient + diffuse  * _DiffuseFactor, texColor.w);
             }
             ENDCG
         }

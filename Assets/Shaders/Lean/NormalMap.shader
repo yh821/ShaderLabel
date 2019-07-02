@@ -1,12 +1,12 @@
 ﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
-// 法线贴图映射的编写+透明
-Shader "Lean/NormalAlpha" {
+// 法线贴图
+Shader "Lean/NormalMap" {
     Properties{
-        _Color("Color",Color) = (1,1,1,1)
         _MainTex("Main Tex",2D) = "white"{}
         _NormalMap("Normal Map",2D) = "bump"{} //bump默认值的意思：若没有法线贴图，则使用顶点自带的
-        _BumpScale("Bump Scale",Float) = 1
+        _Color("Color",Color) = (1,1,1,1)
+        _BumpScale("Bump Scale",Range(-30,30)) = 3
     }
 
     SubShader{
@@ -16,9 +16,6 @@ Shader "Lean/NormalAlpha" {
         Pass{
         
             Tags {"LightMode" = "ForwardBase"}
-
-            //ZWrite Off
-            Blend SrcAlpha OneMinusSrcAlpha
 
             CGPROGRAM
 
@@ -65,8 +62,8 @@ Shader "Lean/NormalAlpha" {
                 // 这个矩阵用来把模型空间下的方向转换成切线空间下
                 TANGENT_SPACE_ROTATION;
 
-                //ObjSpaceLightDir(v.vertex) 得到模型空间下的平行光方向
-                f.lightDir = mul(rotation, ObjSpaceLightDir(v.vertex));
+                //模型转切线矩阵 * 模型空间平行光方向
+                f.lightDir = mul(rotation, ObjSpaceLightDir(v.vertex));//切线空间平衡光方向
                     
                 return f;
             }
@@ -79,17 +76,16 @@ Shader "Lean/NormalAlpha" {
                 fixed3 tangentNormal = UnpackNormal(normalColor);
                 tangentNormal.xy = tangentNormal.xy * _BumpScale;
                 tangentNormal = normalize(tangentNormal);
-
-                // 模型空间下的平行光方向
+                // 切线空间下的平行光方向
                 fixed3 lightDir = normalize(f.lightDir);
-
                 // tex2D 根据MainTex贴图的纹理坐标获取颜色值
                 fixed4 texColor = tex2D(_MainTex,f.uv.xy) * _Color;
+                // 环境光
+                fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz * texColor.xyz; 
+                // 漫反射 = 光源颜色*材质颜色*max(0,dot(法线,光源方向))
+                fixed3 diffuse = _LightColor0.rgb * texColor.xyz * max(dot(tangentNormal, lightDir), 0);
 
-                // 为漫反射混合上每个像素点的纹理颜色
-                fixed3 diffuse = _LightColor0.rgb * texColor * max(dot(tangentNormal, lightDir), 0);
-
-                return fixed4(diffuse, texColor.w);
+                return fixed4(ambient+diffuse, 1.0);
             }
 
             ENDCG
