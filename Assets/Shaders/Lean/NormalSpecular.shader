@@ -1,5 +1,6 @@
 ﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
+// 法线高光
 Shader "Lean/NormalSpecular"
 {
 	Properties
@@ -48,6 +49,9 @@ Shader "Lean/NormalSpecular"
             sampler2D _MainTex;
             fixed4 _MainTex_ST;
             fixed _MoveDir;
+
+
+
             // 方式一，切线空间下计算
             v2f vert (appdata v)
             {
@@ -56,7 +60,7 @@ Shader "Lean/NormalSpecular"
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 TANGENT_SPACE_ROTATION;
                 //rotation 是由 顶点法线和切线 计算除 副切线 后，组成的 切线空间的矩阵
-                //转换 光线和观察方向 从 世界空间 到 模型空间（ObjSpaceLightDir） 再到 切线空间
+                //转换 光源方向和观察方向 从 世界空间 到 模型空间（ObjSpaceLightDir） 再到 切线空间
                 o.lightDir = mul(rotation, ObjSpaceLightDir(v.vertex)).xyz;
                 o.viewDir = mul(rotation, ObjSpaceViewDir(v.vertex)).xyz;
                 //不在这里归一化是为了会不影响 插值结果，所以在 frag 中归一化
@@ -64,9 +68,9 @@ Shader "Lean/NormalSpecular"
             }
             fixed4 frag (v2f i) : SV_Target
             {
-                //切线空间光线方向
+                //切线空间光源方向
                 fixed3 tangentLightDir = normalize(i.lightDir);
-                //切线空间视觉方向
+                //切线空间观察方向
                 fixed3 tangentViewDir = normalize(i.viewDir);
                 //采样 法线贴图，并转换 像素值 为 法线值 （normal = pixel * 2 -1）
                 fixed4 normalColor = tex2D(_NormalTex, i.uv);
@@ -76,11 +80,11 @@ Shader "Lean/NormalSpecular"
                 fixed4 tex = tex2D(_MainTex, i.uv);
                 //环境光
                 fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz * tex.rgb;
-                //漫反射 = 直射光颜色 * max(0, cos(光源方向和法线方向夹角)) * 材质自身色彩
+                //漫反射 = 光源颜色 * 材质色彩 * max(0, cos(光源方向和法线方向的夹角))
                 fixed3 diffuse = _LightColor0.rgb * tex.rgb * saturate(dot(tangentNormal, tangentLightDir));
                 //Blinn-Phong高光光照模型，相对于普通的Phong高光模型，会更加光
-                fixed3 halfDir = normalize(tangentLightDir + tangentViewDir);
-                //高光反射 = 直射光 * pow(max(0, dot(法线,高光光照模型)), 高光反射参数)
+                fixed3 halfDir = normalize(tangentLightDir + tangentViewDir);//光源方向+观察方向
+                //高光反射 = 光源颜色 * pow(max(0, dot(切线,高光光照模型)), 高光强度)
                 fixed3 specular = _LightColor0.rgb * _Specular.rgb * pow(saturate(dot(tangentNormal, halfDir)), _Gloss);
                 //边缘颜色，对于法线和观察方向，只要在同一坐标系下即可
                 //fixed dotProduct = 1 - saturate(dot(tangentNormal, tangentViewDir));
@@ -89,6 +93,9 @@ Shader "Lean/NormalSpecular"
                 //return fixed4(ambient + diffuse + specular + rim * maskCol.rgb, 1);
                 return fixed4(ambient + diffuse + specular, 1);
             }
+
+
+
             // 方式二，世界空间下计算
             struct appdata2
             {
@@ -142,7 +149,7 @@ Shader "Lean/NormalSpecular"
                 //构建 转换矩阵
                 //float3x3 worldNormalMatrix = float3x3(i.TtoW0.xyz, i.TtoW1.xyz, i.TtoW2.xyz);
                 //fixed3 worldNormal = normalize(mul(worldNormalMatrix, tangentNormal));
-
+                //环境光
                 fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz * tex.rgb;
                 //漫反射
                 fixed3 diffuse = _LightColor0.rgb * tex.rgb * saturate(dot(worldNormal, worldLightDir));

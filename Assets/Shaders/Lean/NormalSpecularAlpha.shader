@@ -1,5 +1,6 @@
 ﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
+// 法线高光+透明
 Shader "Lean/NormalSpecularAlpha"
 {
 	Properties
