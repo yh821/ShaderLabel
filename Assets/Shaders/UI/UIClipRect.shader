@@ -2,7 +2,7 @@
 
 // Unity built-in shader source. Copyright (c) 2016 Unity Technologies. MIT license (see license.txt)
 
-Shader "Lean/UI/UIClipRect"
+Shader "Learn/UI/UIClipRect"
 {
 	Properties {
 		_MainTex ("Particle Texture", 2D) = "white" {}
